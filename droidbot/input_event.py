@@ -80,7 +80,8 @@ KEY_SetTextEvent = "set_text"
 KEY_IntentEvent = "intent"
 KEY_SpawnEvent = "spawn"
 KEY_KillAppEvent = "kill_app"
-
+KEY_SetVariableEvent = "set_variable"
+KEY_UnsetVariableEvent = "unset_variable"
 
 class InvalidEventException(Exception):
     pass
@@ -147,6 +148,10 @@ class InputEvent(object):
             return ExitEvent(event_dict=event_dict)
         elif event_type == KEY_SpawnEvent:
             return SpawnEvent(event_dict=event_dict)
+        elif event_type == KEY_SetVariableEvent:
+            return SetVariableEvent(event_dict['target_variable'])
+        elif event_type == KEY_UnsetVariableEvent:
+            return UnsetVariableEvent(event_dict['target_variable'])
 
     @abstractmethod
     def get_event_str(self, state):
@@ -784,6 +789,37 @@ class SpawnEvent(InputEvent):
     def get_event_str(self, state):
         return "%s()" % self.__class__.__name__
 
+class SetVariableEvent(object):
+    '''
+    An event to set a state variable
+    '''
+    def __init__(self, variable):
+        super().__init__()
+        self.event_type = KEY_SetVariableEvent
+        self.variable = variable
+    
+    def send(self, device):
+        from .device_state import DeviceState
+        DeviceState.state_variables.add(self.variable)
+
+    def get_event_str(self, state):
+        return "%s(%s)" % (self.__class__.__name__,self.variable)
+        
+class UnsetVariableEvent(object):
+    '''
+    An event to unset a state variable
+    '''
+    def __init__(self, variable):
+        super().__init__()
+        self.event_type = KEY_UnsetVariableEvent
+        self.variable = variable
+    
+    def send(self, device):
+        from .device_state import DeviceState
+        DeviceState.state_variables.remove(self.variable)
+    
+    def get_event_str(self, state):
+        return "%s(%s)" % (self.__class__.__name__,self.variable)
 
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
@@ -792,5 +828,7 @@ EVENT_TYPES = {
     KEY_SwipeEvent: SwipeEvent,
     KEY_ScrollEvent: ScrollEvent,
     KEY_IntentEvent: IntentEvent,
-    KEY_SpawnEvent: SpawnEvent
+    KEY_SpawnEvent: SpawnEvent,
+    KEY_SetVariableEvent: SetVariableEvent,
+    KEY_UnsetVariableEvent: UnsetVariableEvent
 }

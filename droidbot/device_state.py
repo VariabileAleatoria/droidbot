@@ -10,6 +10,7 @@ class DeviceState(object):
     """
     the state of the current device
     """
+    state_variables = set()
 
     def __init__(self, device, views, foreground_activity, activity_stack, background_services,
                  tag=None, screenshot_path=None):

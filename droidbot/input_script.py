@@ -6,6 +6,7 @@ import re
 
 from .input_event import InputEvent
 from .utils import safe_re_match
+from .device_state import DeviceState
 
 VIEW_ID = '<view_id>'
 STATE_ID = '<state_id>'
@@ -21,6 +22,7 @@ ViewSelector_VAL = 'ViewSelector'
 StateSelector_VAL = 'StateSelector'
 DroidBotOperation_VAL = 'DroidBotOperation'
 ScriptEvent_VAL = 'ScriptEvent'
+StateVariablesSelector_VAL = "some string I don't know if I need" # Apparently only used to check if str
 
 
 class DroidBotScript(object):
@@ -325,7 +327,8 @@ class StateSelector(object):
     selector_grammar = {
         'activity': REGEX_VAL,
         'services': [REGEX_VAL],
-        'views': [ViewSelector_VAL]
+        'views': [ViewSelector_VAL],
+        'state_variables': [StateVariablesSelector_VAL]
     }
 
     def __init__(self, state_selector_id, selector_dict, script):
@@ -336,6 +339,7 @@ class StateSelector(object):
         self.activity_re = None
         self.service_re_set = set()
         self.views = set()
+        self.state_variables = set()
         self.parse()
 
     def parse(self):
@@ -356,6 +360,9 @@ class StateSelector(object):
                 for view_id in selector_value:
                     DroidBotScript.check_grammar_key_is_valid(view_id, self.script.views, key_tag)
                     self.views.add(self.script.views[view_id])
+            elif selector_key == 'state_variables':
+                for state_variable in selector_value:
+                    self.state_variables.add(state_variable)
 
     def match(self, device_state):
         """
@@ -389,6 +396,10 @@ class StateSelector(object):
                     view_selector_matched = True
                     break
             if not view_selector_matched:
+                return False
+        for state_variable in self.state_variables:
+            print("Controllo la variabile "+state_variable)
+            if not state_variable in DeviceState.state_variables:
                 return False
         return True
 
