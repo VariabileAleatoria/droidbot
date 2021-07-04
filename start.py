@@ -125,9 +125,6 @@ def main():
         with open(opts.user_input_path) as f:
             from droidbot.device_state import DeviceState
             DeviceState.user_inputs = json.load(f)
-    else:
-        print("addio")
-
     if start_mode == "master":
         droidmaster = DroidMaster(
             app_path=opts.apk_path,
