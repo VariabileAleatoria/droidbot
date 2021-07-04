@@ -4,13 +4,14 @@ import os
 
 from .utils import md5
 from .input_event import TouchEvent, LongTouchEvent, ScrollEvent, SetTextEvent, KeyEvent
-
+import random
 
 class DeviceState(object):
     """
     the state of the current device
     """
     state_variables = set()
+    user_inputs = None
 
     def __init__(self, device, views, foreground_activity, activity_stack, background_services,
                  tag=None, screenshot_path=None):
@@ -444,7 +445,11 @@ class DeviceState(object):
 
         for view_id in enabled_view_ids:
             if self.__safe_dict_get(self.views[view_id], 'editable'):
-                possible_events.append(SetTextEvent(view=self.views[view_id], text="HelloWorld"))
+                if not DeviceState.user_inputs is None:
+                    user_text = random.choice(DeviceState.user_inputs)
+                    possible_events.append(SetTextEvent(view=self.views[view_id], text=user_text))
+                else:
+                    possible_events.append(SetTextEvent(view=self.views[view_id], text="HelloWorld"))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views
                 pass

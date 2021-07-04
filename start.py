@@ -89,6 +89,8 @@ def parse_args():
                         help="Ignore Ad views by checking resource_id.")
     parser.add_argument("-replay_output", action="store", dest="replay_output",
                         help="The droidbot output directory being replayed.")
+    parser.add_argument("-user_input", action="store", dest="user_input_path",
+                        help="The file containing a json list of possible inputs")
     options = parser.parse_args()
     # print options
     return options
@@ -114,6 +116,17 @@ def main():
             start_mode = "worker"
     else:
         start_mode = "normal"
+
+    if opts.user_input_path: 
+        if not os.path.exists(opts.user_input_path):
+            print("User input file does not exists.")
+            return
+        import json
+        with open(opts.user_input_path) as f:
+            from droidbot.device_state import DeviceState
+            DeviceState.user_inputs = json.load(f)
+    else:
+        print("addio")
 
     if start_mode == "master":
         droidmaster = DroidMaster(
