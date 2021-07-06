@@ -455,7 +455,7 @@ class DeviceState(object):
                         user_text = "HelloWorld"
                     possible_events.append(SetTextEvent(view=self.views[view_id], text=user_text))
                 else:
-                    possible_events.append(SetTextEvent(view=self.views[view_id], text="HelloWorld"))
+                    possible_events.append(SetTextEvent(view=self.views[view_id], text="Hello World"))
                 touch_exclude_view_ids.add(view_id)
                 # TODO figure out what event can be sent to editable views
                 pass
