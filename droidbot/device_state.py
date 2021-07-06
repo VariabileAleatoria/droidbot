@@ -445,8 +445,14 @@ class DeviceState(object):
 
         for view_id in enabled_view_ids:
             if self.__safe_dict_get(self.views[view_id], 'editable'):
+                resource_id = self.__safe_dict_get(self.views[view_id], 'resource_id')
                 if not DeviceState.user_inputs is None:
-                    user_text = random.choice(DeviceState.user_inputs)
+                    if resource_id in DeviceState.user_inputs:
+                        user_text = random.choice(DeviceState.user_inputs[resource_id])
+                    elif "any" in DeviceState.user_inputs:
+                        user_text = random.choice(DeviceState.user_inputs["any"])
+                    else:
+                        user_text = "HelloWorld"
                     possible_events.append(SetTextEvent(view=self.views[view_id], text=user_text))
                 else:
                     possible_events.append(SetTextEvent(view=self.views[view_id], text="HelloWorld"))
