@@ -82,6 +82,7 @@ KEY_SpawnEvent = "spawn"
 KEY_KillAppEvent = "kill_app"
 KEY_SetVariableEvent = "set_variable"
 KEY_UnsetVariableEvent = "unset_variable"
+KEY_SetTextRandomEvent = "set_text_random"
 
 class InvalidEventException(Exception):
     pass
@@ -152,6 +153,9 @@ class InputEvent(object):
             return SetVariableEvent(event_dict['target_variable'])
         elif event_type == KEY_UnsetVariableEvent:
             return UnsetVariableEvent(event_dict['target_variable'])
+        elif event_type == KEY_SetTextRandomEvent:
+            return SetTextRandomEvent(event_dict=event_dict)
+        
 
     @abstractmethod
     def get_event_str(self, state):
@@ -240,7 +244,7 @@ class EventLog(object):
         self.event_str = self.event.get_event_str(self.from_state)
         print("Action: %s" % self.event_str)
         self.device.send_event(self.event)
-
+    
     def start_profiling(self):
         """
         start profiling the current event
@@ -821,6 +825,50 @@ class UnsetVariableEvent(object):
     def get_event_str(self, state):
         return "%s(%s)" % (self.__class__.__name__,self.variable)
 
+class SetTextRandomEvent(UIEvent):
+    """
+    input text to target UI
+    """
+
+    def __init__(self, x=None, y=None, view=None, text=None, event_dict=None):
+        super().__init__()
+        self.event_type = KEY_SetTextRandomEvent
+        self.x = x
+        self.y = y
+        self.view = view
+        self.text = text
+        if event_dict is not None:
+            self.__dict__.update(event_dict)
+            resource_id = self.view['resource_id']
+            from .device_state import DeviceState
+            if resource_id in DeviceState.user_inputs:
+                self.text = random.choice(DeviceState.user_inputs[resource_id])
+            elif "any" in DeviceState.user_inputs:
+                self.text = random.choice(DeviceState.user_inputs["any"])
+            else:
+                self.text = "HelloWorld"
+
+
+    def send(self, device):
+        x, y = UIEvent.get_xy(x=self.x, y=self.y, view=self.view)
+        touch_event = TouchEvent(x=x, y=y)
+        touch_event.send(device)
+        device.view_set_text(self.text)
+        return True
+
+    def get_event_str(self, state):
+        if self.view is not None:
+            return f"{self.__class__.__name__}({UIEvent.view_str(state, self.view)}, text={self.text})"
+        elif self.x is not None and self.y is not None:
+            return "%s(state=%s, x=%s, y=%s, text=%s)" %\
+                   (self.__class__.__name__, state.state_str, self.x, self.y, self.text)
+        else:
+            msg = "Invalid %s!" % self.__class__.__name__
+            raise InvalidEventException(msg)
+
+    def get_views(self):
+        return [self.view] if self.view else []
+
 EVENT_TYPES = {
     KEY_KeyEvent: KeyEvent,
     KEY_TouchEvent: TouchEvent,
@@ -830,5 +878,6 @@ EVENT_TYPES = {
     KEY_IntentEvent: IntentEvent,
     KEY_SpawnEvent: SpawnEvent,
     KEY_SetVariableEvent: SetVariableEvent,
-    KEY_UnsetVariableEvent: UnsetVariableEvent
+    KEY_UnsetVariableEvent: UnsetVariableEvent,
+    KEY_SetTextRandomEvent: SetTextRandomEvent
 }
