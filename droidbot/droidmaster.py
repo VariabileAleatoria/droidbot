@@ -343,7 +343,7 @@ class DroidMaster(object):
 
     def stop(self):
         self.enabled = False
-        if self.timer and self.timer.isAlive():
+        if self.timer and self.timer.is_alive():
             self.timer.cancel()
         # stop listening server
         self.stop_daemon()
