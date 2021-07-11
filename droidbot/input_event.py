@@ -793,7 +793,7 @@ class SpawnEvent(InputEvent):
     def get_event_str(self, state):
         return "%s()" % self.__class__.__name__
 
-class SetVariableEvent(object):
+class SetVariableEvent(InputEvent):
     '''
     An event to set a state variable
     '''
@@ -809,7 +809,7 @@ class SetVariableEvent(object):
     def get_event_str(self, state):
         return "%s(%s)" % (self.__class__.__name__,self.variable)
         
-class UnsetVariableEvent(object):
+class UnsetVariableEvent(InputEvent):
     '''
     An event to unset a state variable
     '''
