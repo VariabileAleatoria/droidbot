@@ -28,6 +28,10 @@
         "text": "text"
     },
     {
+        "event_type": "set_text_random",
+        "target_view": "link"
+    },
+    {
         "event_type": "set_variable",
         "target_variable": "name_variable"
     },
