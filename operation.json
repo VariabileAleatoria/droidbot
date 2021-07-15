@@ -29,7 +29,7 @@
     },
     {
         "event_type": "set_text_random",
-        "target_view": "link"
+        "target_view": "name_view"
     },
     {
         "event_type": "set_variable",
