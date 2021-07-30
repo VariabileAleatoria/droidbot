@@ -1,0 +1,42 @@
+[
+    {
+        "event_type": "scroll",
+        "target_view": "name_view",
+        "direction": "RIGHT"
+    },
+    {
+        "event_type": "key",
+        "name": "BACK"
+    },
+    {
+        "event_type": "touch",
+        "target_view": "name_view"
+    },
+    {
+        "event_type": "touch",
+        "x": 1234,
+        "y": 1234
+    },
+    {
+        "event_type": "set_text",
+        "text": "text"
+    },
+    {
+        "event_type": "set_text",
+        "x": 1234,
+        "y": 1234,
+        "text": "text"
+    },
+    {
+        "event_type": "set_text_random",
+        "target_view": "name_view"
+    },
+    {
+        "event_type": "set_variable",
+        "target_variable": "name_variable"
+    },
+    {
+        "event_type": "unset_variable",
+        "target_variable": "name_variable"
+    }
+]
