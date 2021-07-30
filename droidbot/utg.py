@@ -56,7 +56,10 @@ class UTG(object):
         if not old_state or not new_state:
             return
 
-        event_str = event.get_event_str(old_state)
+        try:
+            event_str = event.get_event_str(old_state)
+        except Exception as e:
+            return
         self.transitions.append((old_state, event, new_state))
 
         if old_state.state_str == new_state.state_str:
